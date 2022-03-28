@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: beam-session-cluster
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  
+  project: flink    
+
+  source:
+    helm:
+      version: v3
+      valueFiles:
+      - values-{{ .Values.env }}.yaml
+    path: ./
+    repoURL: https://github.com/paas2-rts/beam-session-cluster.helm
+    targetRevision: HEAD
+
+  destination:
+    namespace: flink
+    server: {{ .Values.spec.destination.server }}
+    
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true  
+    automated:  
+      prune: true   
